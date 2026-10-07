@@ -111,3 +111,52 @@ When adding questions, keep `answer` aligned with the zero-based position of the
 ├── index.js             # Application entry point and main game loop
 └── package.json         # Project metadata and npm scripts
 ```
+
+## Architecture
+
+- `index.js` loads `data/questions.json`, creates the readline interface, presents the category and question-count menus, runs the main replay loop, and handles top-level errors.
+- `src/input.js` wraps Node.js `readline` in promise-based helpers for prompts, numbered selections, yes/no confirmation, and pause prompts.
+- `src/quiz.js` owns quiz state. It shuffles a copy of the selected questions with Fisher–Yates, tracks progress and score, records answers, displays feedback, and renders final results and incorrect-answer review.
+- `src/colors.js` provides ANSI escape-code styling helpers used by the terminal output.
+
+## Testing
+
+The package defines:
+
+```bash
+npm test
+```
+
+This runs `node --test`. There are currently no test files in the repository, so the command does not execute project-specific test cases.
+
+## Development notes
+
+- The project uses native ECMAScript module syntax (`import`/`export`) and does not use a transpiler or bundler.
+- Questions are loaded at runtime from `data/questions.json` relative to the entry-point file, so the data file must remain in that location unless the loader is changed.
+- The game shuffles the selected questions, but answer options remain in the order stored in the JSON file.
+- Numeric menu input is validated and reprompted until it falls within the displayed range.
+- Terminal styling uses ANSI escape sequences and has no external package dependency.
+
+## Build and deployment
+
+No build script, bundler configuration, Docker configuration, or deployment configuration is included. Run the application directly with Node.js on a terminal; no separate build step is required.
+
+## Limitations
+
+- The question bank is local JSON data and is not backed by a database or external service.
+- There is no persistent score history, user account system, network API, or automated test suite currently included.
+- The available question-count choices are based on the number of questions in the selected category: all questions is always available, while 3 and 5 questions are shown only when enough questions exist.
+
+## Contributing
+
+To modify the quiz locally:
+
+1. Edit the source files or add questions to `data/questions.json`.
+2. Preserve the question schema and zero-based answer indexes.
+3. Run `npm test` to execute the configured Node.js test command.
+4. Run `npm start` to verify the interactive flow manually.
+
+## License
+
+This project is licensed under the [MIT License](https://opensource.org/licenses/MIT), as declared in `package.json`.
+```
